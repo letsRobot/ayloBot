@@ -103,6 +103,10 @@ public class Robot : MonoBehaviour
 			Constants.commandsOnly = false;
 		}
 
+		StoreChatMessages(robotChat); // cleaner way to filter messages
+		
+		// Working messy code
+		/*
 		var numberCommandChatMessages = 0;
 		var countMessages = robotMessages.GetChatMessages();
 		robotChat.text = "";
@@ -129,10 +133,34 @@ public class Robot : MonoBehaviour
 				
 			robotChat.text += ChatMessageToRichTextLine(message);
 		}
+		*/
 	}
 
 
 
+	void StoreChatMessages(TextMesh txt)
+	{
+		int messageCount = 0;
+		var chatMessages = robotMessages.GetChatMessages();
+		txt.text = "";
+
+		foreach(var message in chatMessages)
+		{
+			if( (Constants.commandsOnly == true && (message.user == "jtv" || message.isCommand == true )) // its a command and commands are enabled
+			  || (message.isCommand == false && Constants.commandsOnly == false))
+			  // Also check if its a command and commands only is on store it
+			  // other wise we don't want commands to show up on the bot
+			{
+				txt.text += ChatMessageToRichTextLine(message);
+				++messageCount;
+			}
+		}
+		
+		// we set the total amount of messages after
+		// I'm not sure if this is needed before text is modified in the TextMesh object
+		robotMessages.SetMaximumNumberOfMessages(messageCount);
+	}
+	
 	string ChatMessageToRichTextLine(RobotChatMessage message)
 
 	{
